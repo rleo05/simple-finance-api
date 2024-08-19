@@ -5,6 +5,8 @@ import com.project.simple_finance_api.entities.user.Roles;
 import com.project.simple_finance_api.entities.user.User;
 import com.project.simple_finance_api.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,7 +15,12 @@ public class UserService {
     private final UserRepository userRepository;
 
     public void createUser(RegisterRequest request){
-        User user = new User(request, Roles.USER);
+        String encryptedPassword = new BCryptPasswordEncoder().encode(request.password());
+        User user = new User(request, encryptedPassword ,Roles.USER);
         userRepository.save(user);
+    }
+
+    public UserDetails findByEmail(String email){
+        return userRepository.findByEmail(email);
     }
 }

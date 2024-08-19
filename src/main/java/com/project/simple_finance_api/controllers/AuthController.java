@@ -9,10 +9,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -35,12 +34,29 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    @ResponseStatus(HttpStatus.OK)
-    public String register(@RequestBody LoginRequest request, HttpServletResponse response){
+    public ResponseEntity<String> login(@RequestBody LoginRequest request, HttpServletResponse response){
+        try {
         Authentication usernamePassword = new UsernamePasswordAuthenticationToken(request.email(), request.password());
         Authentication auth = authenticationManager.authenticate(usernamePassword);
 
         String token  = tokenService.generateToken((User) auth.getPrincipal());
-        return token;
+        ResponseCookie cookie = ResponseCookie.from("accessToken", token)
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(300)
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        return ResponseEntity.ok().body("Successfully authenticated!");
+        } catch (BadCredentialsException e){
+            ResponseCookie cookie = ResponseCookie.from("accessToken", null)
+                    .httpOnly(true)
+                    .secure(false)
+                    .path("/")
+                    .maxAge(0)
+                    .build();
+            response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+            throw new BadCredentialsException("Invalid credentials");
+        }
     }
 }

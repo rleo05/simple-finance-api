@@ -1,5 +1,6 @@
 package com.project.simple_finance_api.entities.transaction;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.simple_finance_api.entities.account.Account;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ import java.time.Instant;
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @JsonIgnore
     String id;
 
     double amount;
@@ -26,10 +28,10 @@ public class Transaction {
     TransactionType type;
 
     @ManyToOne
-    @JoinColumn(name="sender_document")
+    @JoinColumn(name="sender")
     Account accountSender;
 
     @ManyToOne
-    @JoinColumn(name="receiver_document")
+    @JoinColumn(name="receiver")
     Account accountReceiver;
 }

@@ -1,6 +1,7 @@
 package com.project.simple_finance_api.handler;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.project.simple_finance_api.exception.InsufficientFundsException;
 import com.project.simple_finance_api.exception.ResourceNotFoundException;
 import com.project.simple_finance_api.exception.StandardExceptionDetails;
 import com.project.simple_finance_api.exception.ValidationExceptionsDetails;
@@ -55,6 +56,19 @@ public class CustomExceptionHandler {
                         .builder()
                         .status(HttpStatus.BAD_REQUEST.value())
                         .error("ResourceNotFoundException")
+                        .message(e.getMessage())
+                        .timestamp(LocalDateTime.now())
+                        .path(request.getRequestURI())
+                        .build()
+                , HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(InsufficientFundsException.class)
+    public ResponseEntity<StandardExceptionDetails> insufficientFundsException(InsufficientFundsException e, HttpServletRequest request) {
+        return new ResponseEntity<>(
+                StandardExceptionDetails
+                        .builder()
+                        .status(HttpStatus.BAD_REQUEST.value())
+                        .error("InsufficientFundsException")
                         .message(e.getMessage())
                         .timestamp(LocalDateTime.now())
                         .path(request.getRequestURI())

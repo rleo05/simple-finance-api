@@ -22,6 +22,14 @@ public class Transaction {
     @JsonIgnore
     String id;
 
+    public Transaction(double amount, Instant timestamp, TransactionType type, Account accountSender){
+        this.amount = amount;
+        this.timestamp = timestamp;
+        this.type = type;
+        this.accountSender = accountSender;
+        this.accountReceiver = null;
+    }
+
     double amount;
     Instant timestamp;
     @Enumerated(EnumType.STRING)

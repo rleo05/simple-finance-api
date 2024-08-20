@@ -1,5 +1,6 @@
 package com.project.simple_finance_api.entities.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.simple_finance_api.dto.auth.RegisterRequest;
 import com.project.simple_finance_api.entities.account.Account;
 import jakarta.persistence.*;
@@ -31,6 +32,7 @@ public class User implements UserDetails {
     private Roles role;
 
     @OneToOne(mappedBy = "user")
+    @JsonIgnore
     private Account account;
 
     public User(RegisterRequest request, String encryptedPassword, Roles role){

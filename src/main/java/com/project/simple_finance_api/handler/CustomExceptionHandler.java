@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -31,6 +32,20 @@ public class CustomExceptionHandler {
                         .path(request.getRequestURI())
                         .build()
                 , HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<StandardExceptionDetails> AccessDeniedException(AccessDeniedException e, HttpServletRequest request) {
+        return new ResponseEntity<>(
+                StandardExceptionDetails
+                        .builder()
+                        .status(HttpStatus.FORBIDDEN.value())
+                        .error("AccessDeniedException")
+                        .message(e.getMessage())
+                        .timestamp(LocalDateTime.now())
+                        .path(request.getRequestURI())
+                        .build()
+                , HttpStatus.FORBIDDEN);
     }
 
 //    @ExceptionHandler(TokenExpiredException.class)

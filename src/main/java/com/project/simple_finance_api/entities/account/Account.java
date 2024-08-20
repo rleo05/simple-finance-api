@@ -1,5 +1,6 @@
 package com.project.simple_finance_api.entities.account;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.simple_finance_api.entities.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

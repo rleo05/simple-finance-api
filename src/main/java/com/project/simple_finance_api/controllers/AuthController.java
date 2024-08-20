@@ -3,6 +3,7 @@ package com.project.simple_finance_api.controllers;
 import com.project.simple_finance_api.dto.auth.LoginRequest;
 import com.project.simple_finance_api.dto.auth.RegisterRequest;
 import com.project.simple_finance_api.entities.user.User;
+import com.project.simple_finance_api.repositories.AccountRepository;
 import com.project.simple_finance_api.services.AccountService;
 import com.project.simple_finance_api.services.TokenService;
 import com.project.simple_finance_api.services.UserService;
@@ -25,6 +26,8 @@ public class AuthController {
     private final UserService userService;
     @Autowired
     private final AccountService accountService;
+    @Autowired
+    private final AccountRepository accountRepository;
     private final TokenService tokenService;
     private final AuthenticationManager authenticationManager;
 
@@ -34,7 +37,7 @@ public class AuthController {
         if(userService.findByEmail(request.email()) != null) {
             throw new DataIntegrityViolationException("Error: Email is already registered");
         }
-        if(accountService.findByDocument(request.document()) != null){
+        if(accountRepository.findByDocument(request.document()).isPresent()){
             throw new DataIntegrityViolationException("Error: Document is already registered");
         }
 

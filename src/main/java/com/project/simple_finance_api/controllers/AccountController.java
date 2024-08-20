@@ -6,6 +6,7 @@ import com.project.simple_finance_api.services.TokenService;
 import com.project.simple_finance_api.services.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,6 +52,7 @@ public class AccountController {
 
         String emailByToken = tokenService.validateToken(token);
         String emailByDocument = accountService.findByDocument(document).getUser().getEmail();
+
         return !emailByDocument.equals(emailByToken);
     }
 }

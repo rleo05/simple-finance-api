@@ -1,6 +1,7 @@
 package com.project.simple_finance_api.handler;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.project.simple_finance_api.exception.ResourceNotFoundException;
 import com.project.simple_finance_api.exception.StandardExceptionDetails;
 import com.project.simple_finance_api.exception.ValidationExceptionsDetails;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,6 +47,19 @@ public class CustomExceptionHandler {
                         .path(request.getRequestURI())
                         .build()
                 , HttpStatus.FORBIDDEN);
+    }
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<StandardExceptionDetails> resourceNotFoundException(ResourceNotFoundException e, HttpServletRequest request) {
+        return new ResponseEntity<>(
+                StandardExceptionDetails
+                        .builder()
+                        .status(HttpStatus.BAD_REQUEST.value())
+                        .error("ResourceNotFoundException")
+                        .message(e.getMessage())
+                        .timestamp(LocalDateTime.now())
+                        .path(request.getRequestURI())
+                        .build()
+                , HttpStatus.BAD_REQUEST);
     }
 
 //    @ExceptionHandler(TokenExpiredException.class)

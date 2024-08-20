@@ -3,11 +3,13 @@ package com.project.simple_finance_api.controllers;
 import com.project.simple_finance_api.dto.auth.LoginRequest;
 import com.project.simple_finance_api.dto.auth.RegisterRequest;
 import com.project.simple_finance_api.entities.user.User;
+import com.project.simple_finance_api.services.AccountService;
 import com.project.simple_finance_api.services.TokenService;
 import com.project.simple_finance_api.services.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.*;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +23,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
     private final UserService userService;
+    @Autowired
+    private final AccountService accountService;
     private final TokenService tokenService;
     private final AuthenticationManager authenticationManager;
 
@@ -30,6 +34,10 @@ public class AuthController {
         if(userService.findByEmail(request.email()) != null) {
             throw new DataIntegrityViolationException("Error: Email is already registered");
         }
+        if(accountService.findByDocument(request.document()) != null){
+            throw new DataIntegrityViolationException("Error: Document is already registered");
+        }
+
         userService.createUser(request);
     }
 

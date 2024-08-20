@@ -26,7 +26,7 @@ public class CustomExceptionHandler {
                         .builder()
                         .status(HttpStatus.CONFLICT.value())
                         .error("DataIntegrityViolation")
-                        .message("This email is already registered. Try with another")
+                        .message(e.getMessage())
                         .timestamp(LocalDateTime.now())
                         .path(request.getRequestURI())
                         .build()

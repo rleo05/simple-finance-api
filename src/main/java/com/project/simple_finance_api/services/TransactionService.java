@@ -2,6 +2,7 @@ package com.project.simple_finance_api.services;
 
 import com.project.simple_finance_api.dto.transaction.DepositWithdrawalRequest;
 import com.project.simple_finance_api.dto.transaction.DepositWithdrawalResponse;
+import com.project.simple_finance_api.dto.transaction.TransactionResponse;
 import com.project.simple_finance_api.entities.account.Account;
 import com.project.simple_finance_api.entities.transaction.Transaction;
 import com.project.simple_finance_api.entities.transaction.TransactionType;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 
 @Service
 public class TransactionService {
@@ -43,6 +45,13 @@ public class TransactionService {
                 getNowInstant(), TransactionType.WITHDRAWAL, account);
         transactionRepository.save(transaction);
         return new DepositWithdrawalResponse(transaction);
+    }
+
+    public List<TransactionResponse> historic(String document){
+        String accountId = accountService.findByDocument(document).getId();
+        return transactionRepository.findByAccountSender_Id(accountId)
+                .stream().map(TransactionResponse::new)
+                .toList();
     }
 
 

@@ -12,11 +12,10 @@ public record TransactionResponse(
         double amount,
         Instant timestamp,
         TransactionType type
-        ) {
-
+) {
     public TransactionResponse(Transaction transaction){
         this(transaction.getAccountSender().getDocument(),
-                null,
+                transaction.getAccountReceiver() != null ? transaction.getAccountReceiver().getDocument() : null,
                 transaction.getAmount(),
                 transaction.getTimestamp(),
                 transaction.getType());

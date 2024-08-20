@@ -2,6 +2,8 @@ package com.project.simple_finance_api.controllers;
 
 import com.project.simple_finance_api.dto.transaction.DepositWithdrawalRequest;
 import com.project.simple_finance_api.dto.transaction.DepositWithdrawalResponse;
+import com.project.simple_finance_api.dto.transaction.TransactionResponse;
+import com.project.simple_finance_api.entities.transaction.Transaction;
 import com.project.simple_finance_api.services.AccountService;
 import com.project.simple_finance_api.services.TokenService;
 import com.project.simple_finance_api.services.TransactionService;
@@ -12,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("transaction")
@@ -37,6 +41,15 @@ public class TransactionController {
             throw new AccessDeniedException("You cannot make a withdrawal from this account");
         }
         return ResponseEntity.ok().body(transactionService.withdrawal(document, deposit));
+    }
+
+    @GetMapping(path = "/{document}/historic")
+    public ResponseEntity<List<TransactionResponse>> historicTransactions(@PathVariable String document, HttpServletRequest request){
+        if (isCorrectToken(request, document)) {
+            throw new AccessDeniedException("You cannot see the transaction historic from this account");
+        }
+
+        return ResponseEntity.ok().body(transactionService.historic(document));
     }
 
     private boolean isCorrectToken(HttpServletRequest request, String document){

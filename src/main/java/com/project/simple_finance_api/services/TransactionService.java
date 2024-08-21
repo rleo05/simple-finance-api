@@ -1,8 +1,6 @@
 package com.project.simple_finance_api.services;
 
-import com.project.simple_finance_api.dto.transaction.DepositWithdrawalRequest;
-import com.project.simple_finance_api.dto.transaction.DepositWithdrawalResponse;
-import com.project.simple_finance_api.dto.transaction.TransactionResponse;
+import com.project.simple_finance_api.dto.transaction.*;
 import com.project.simple_finance_api.entities.account.Account;
 import com.project.simple_finance_api.entities.transaction.Transaction;
 import com.project.simple_finance_api.entities.transaction.TransactionType;
@@ -14,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -28,7 +27,7 @@ public class TransactionService {
         account.setBalance(account.getBalance() + deposit.amount());
         accountService.createAccount(account);
         Transaction transaction = new Transaction(deposit.amount(),
-                getNowInstant(), TransactionType.DEPOSIT, account);
+                getNowInstant(), TransactionType.DEPOSIT, account, null);
         transactionRepository.save(transaction);
         return new DepositWithdrawalResponse(transaction);
     }
@@ -42,7 +41,7 @@ public class TransactionService {
         account.setBalance(accountBalance - deposit.amount());
         accountService.createAccount(account);
         Transaction transaction = new Transaction(deposit.amount(),
-                getNowInstant(), TransactionType.WITHDRAWAL, account);
+                getNowInstant(), TransactionType.WITHDRAWAL, account, null);
         transactionRepository.save(transaction);
         return new DepositWithdrawalResponse(transaction);
     }
@@ -61,6 +60,28 @@ public class TransactionService {
                 .toList();
     }
 
+
+    public TransferResponse transfer(String document, TransferRequest transferRequest){
+        Account senderAccount = accountService.findByDocument(document);
+        double senderBalance = senderAccount.getBalance();
+
+        if(senderBalance < transferRequest.amount()) {
+            throw new InsufficientFundsException("You do not have enough money to complete this withdrawal");
+        }
+
+        Account receiverAccount = accountService.findByDocument(transferRequest.receiver_document());
+        senderAccount.setBalance(senderBalance - transferRequest.amount());
+        receiverAccount.setBalance(receiverAccount.getBalance() + transferRequest.amount());
+        accountService.createAccount(senderAccount);
+        accountService.createAccount(receiverAccount);
+        Transaction transaction = new Transaction(transferRequest.amount(),
+                getNowInstant(), TransactionType.TRANSFER, senderAccount, receiverAccount);
+        transactionRepository.save(transaction);
+        return new TransferResponse(STR."\{senderAccount.getFirstName()} \{senderAccount.getLastName()}",
+                senderAccount.getDocument(), STR."\{receiverAccount.getFirstName()} \{receiverAccount.getLastName()}",
+                receiverAccount.getDocument(), transferRequest.amount(), getNowInstant());
+
+    }
 
     private Instant getNowInstant(){
         return LocalDateTime.now().toInstant(ZoneOffset.of("-03:00"));

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -80,6 +81,19 @@ public class CustomExceptionHandler {
                         .status(HttpStatus.BAD_REQUEST.value())
                         .error("MethodArgumentTypeMismatchException")
                         .message("Invalid param")
+                        .timestamp(LocalDateTime.now())
+                        .path(request.getRequestURI())
+                        .build()
+                , HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<StandardExceptionDetails> httpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e, HttpServletRequest request) {
+        return new ResponseEntity<>(
+                StandardExceptionDetails
+                        .builder()
+                        .status(HttpStatus.BAD_REQUEST.value())
+                        .error("HttpRequestMethodNotSupportedException")
+                        .message(e.getMessage())
                         .timestamp(LocalDateTime.now())
                         .path(request.getRequestURI())
                         .build()

@@ -1,8 +1,6 @@
 package com.project.simple_finance_api.controllers;
 
-import com.project.simple_finance_api.dto.transaction.DepositWithdrawalRequest;
-import com.project.simple_finance_api.dto.transaction.DepositWithdrawalResponse;
-import com.project.simple_finance_api.dto.transaction.TransactionResponse;
+import com.project.simple_finance_api.dto.transaction.*;
 import com.project.simple_finance_api.entities.transaction.TransactionType;
 import com.project.simple_finance_api.services.AccountService;
 import com.project.simple_finance_api.services.TokenService;
@@ -51,6 +49,14 @@ public class TransactionController {
         return ResponseEntity.ok().body(transactionService.historic(document, type));
     }
 
+    @PostMapping(path = "/{document}/transfer")
+    public ResponseEntity<TransferResponse> historicTransactions(@PathVariable String document, @RequestBody TransferRequest transferRequest, HttpServletRequest request){
+        if (isCorrectToken(request, document)) {
+            throw new AccessDeniedException("You cannot see transfer money from this account");
+        }
+        return ResponseEntity.ok().body(transactionService.transfer(document, transferRequest));
+    }
+
     private boolean isCorrectToken(HttpServletRequest request, String document){
         String token = null;
         for (Cookie cookie : request.getCookies()) {
@@ -61,6 +67,7 @@ public class TransactionController {
 
         String emailByDocument = accountService.findByDocument(document).getUser().getEmail();
         String emailByToken = tokenService.validateToken(token);
+
         return !emailByDocument.equals(emailByToken);
     }
 }

@@ -50,12 +50,12 @@ public class TransactionService {
         String accountId = accountService.findByDocument(document).getId();
 
         if(type != null){
-            return transactionRepository.findByAccountSender_IdAndType(accountId, type)
+            return transactionRepository.findByUserIdAndTypeOrderByTimestampDesc(accountId, type)
                     .stream().map(TransactionResponse::new)
                     .toList();
         }
 
-        return transactionRepository.findByAccountSender_Id(accountId)
+        return transactionRepository.findByAccountSender_IdOrAccountReceiver_IdOrderByTimestampDesc(accountId, accountId)
                 .stream().map(TransactionResponse::new)
                 .toList();
     }

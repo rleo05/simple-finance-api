@@ -3,7 +3,7 @@ package com.project.simple_finance_api.controllers;
 import com.project.simple_finance_api.dto.transaction.DepositWithdrawalRequest;
 import com.project.simple_finance_api.dto.transaction.DepositWithdrawalResponse;
 import com.project.simple_finance_api.dto.transaction.TransactionResponse;
-import com.project.simple_finance_api.entities.transaction.Transaction;
+import com.project.simple_finance_api.entities.transaction.TransactionType;
 import com.project.simple_finance_api.services.AccountService;
 import com.project.simple_finance_api.services.TokenService;
 import com.project.simple_finance_api.services.TransactionService;
@@ -44,12 +44,11 @@ public class TransactionController {
     }
 
     @GetMapping(path = "/{document}/historic")
-    public ResponseEntity<List<TransactionResponse>> historicTransactions(@PathVariable String document, HttpServletRequest request){
+    public ResponseEntity<List<TransactionResponse>> historicTransactions(@PathVariable String document, HttpServletRequest request, @RequestParam(required = false) TransactionType type){
         if (isCorrectToken(request, document)) {
             throw new AccessDeniedException("You cannot see the transaction historic from this account");
         }
-
-        return ResponseEntity.ok().body(transactionService.historic(document));
+        return ResponseEntity.ok().body(transactionService.historic(document, type));
     }
 
     private boolean isCorrectToken(HttpServletRequest request, String document){

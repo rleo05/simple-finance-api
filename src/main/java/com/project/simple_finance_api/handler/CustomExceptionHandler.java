@@ -1,10 +1,6 @@
 package com.project.simple_finance_api.handler;
 
-import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.project.simple_finance_api.exception.InsufficientFundsException;
-import com.project.simple_finance_api.exception.ResourceNotFoundException;
-import com.project.simple_finance_api.exception.StandardExceptionDetails;
-import com.project.simple_finance_api.exception.ValidationExceptionsDetails;
+import com.project.simple_finance_api.exception.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -15,6 +11,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -70,6 +67,19 @@ public class CustomExceptionHandler {
                         .status(HttpStatus.BAD_REQUEST.value())
                         .error("InsufficientFundsException")
                         .message(e.getMessage())
+                        .timestamp(LocalDateTime.now())
+                        .path(request.getRequestURI())
+                        .build()
+                , HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<StandardExceptionDetails> invalidParamTypeException(MethodArgumentTypeMismatchException e, HttpServletRequest request) {
+        return new ResponseEntity<>(
+                StandardExceptionDetails
+                        .builder()
+                        .status(HttpStatus.BAD_REQUEST.value())
+                        .error("MethodArgumentTypeMismatchException")
+                        .message("Invalid param")
                         .timestamp(LocalDateTime.now())
                         .path(request.getRequestURI())
                         .build()

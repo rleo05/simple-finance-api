@@ -47,8 +47,15 @@ public class TransactionService {
         return new DepositWithdrawalResponse(transaction);
     }
 
-    public List<TransactionResponse> historic(String document){
+    public List<TransactionResponse> historic(String document, TransactionType type){
         String accountId = accountService.findByDocument(document).getId();
+
+        if(type != null){
+            return transactionRepository.findByAccountSender_IdAndType(accountId, type)
+                    .stream().map(TransactionResponse::new)
+                    .toList();
+        }
+
         return transactionRepository.findByAccountSender_Id(accountId)
                 .stream().map(TransactionResponse::new)
                 .toList();

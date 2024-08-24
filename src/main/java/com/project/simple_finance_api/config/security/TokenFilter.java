@@ -29,7 +29,7 @@ public class TokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (!request.getRequestURI().equals("/auth/register")) {
+        if (!request.getRequestURI().equals("/auth/register") && !request.getRequestURI().equals("/auth/login")) {
             String token = null;
 
             if (request.getCookies() != null) {

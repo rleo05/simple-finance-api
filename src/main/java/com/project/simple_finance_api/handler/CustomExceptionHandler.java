@@ -100,6 +100,20 @@ public class CustomExceptionHandler {
                 , HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(SelfTransferException.class)
+    public ResponseEntity<StandardExceptionDetails> selfTransferException(SelfTransferException e, HttpServletRequest request) {
+        return new ResponseEntity<>(
+                StandardExceptionDetails
+                        .builder()
+                        .status(HttpStatus.BAD_REQUEST.value())
+                        .error("SelfTransferException")
+                        .message(e.getMessage())
+                        .timestamp(LocalDateTime.now())
+                        .path(request.getRequestURI())
+                        .build()
+                , HttpStatus.BAD_REQUEST);
+    }
+
 //    @ExceptionHandler(TokenExpiredException.class)
 //    public ResponseEntity<StandardExceptionDetails> tokenExpiredException(TokenExpiredException e, HttpServletRequest request){
 //        return new ResponseEntity<>(

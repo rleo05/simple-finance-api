@@ -2,6 +2,7 @@ package com.project.simple_finance_api.controllers;
 
 import com.project.simple_finance_api.dto.transaction.*;
 import com.project.simple_finance_api.entities.transaction.TransactionType;
+import com.project.simple_finance_api.exception.SelfTransferException;
 import com.project.simple_finance_api.services.AccountService;
 import com.project.simple_finance_api.services.TokenService;
 import com.project.simple_finance_api.services.TransactionService;
@@ -52,8 +53,13 @@ public class TransactionController {
     @PostMapping(path = "/{document}/transfer")
     public ResponseEntity<TransferResponse> historicTransactions(@PathVariable String document, @RequestBody TransferRequest transferRequest, HttpServletRequest request){
         if (isCorrectToken(request, document)) {
-            throw new AccessDeniedException("You cannot see transfer money from this account");
+            throw new AccessDeniedException("You cannot transfer money from this account");
         }
+
+        if(document.equals(transferRequest.receiver_document())) {
+            throw new SelfTransferException("You cannot transfer money to yourself");
+        }
+
         return ResponseEntity.ok().body(transactionService.transfer(document, transferRequest));
     }
 

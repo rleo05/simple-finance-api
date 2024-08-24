@@ -2,11 +2,15 @@ package com.project.simple_finance_api.handler;
 
 import com.project.simple_finance_api.exception.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -35,7 +39,7 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<StandardExceptionDetails> AccessDeniedException(AccessDeniedException e, HttpServletRequest request) {
+    public ResponseEntity<StandardExceptionDetails> accessDeniedException(AccessDeniedException e, HttpServletRequest request) {
         return new ResponseEntity<>(
                 StandardExceptionDetails
                         .builder()
@@ -114,34 +118,6 @@ public class CustomExceptionHandler {
                 , HttpStatus.BAD_REQUEST);
     }
 
-//    @ExceptionHandler(TokenExpiredException.class)
-//    public ResponseEntity<StandardExceptionDetails> tokenExpiredException(TokenExpiredException e, HttpServletRequest request){
-//        return new ResponseEntity<>(
-//                StandardExceptionDetails
-//                        .builder()
-//                        .status(HttpStatus.UNAUTHORIZED.value())
-//                        .error("TokenExpired")
-//                        .message("Token already expired, sign in again.")
-//                        .timestamp(LocalDateTime.now())
-//                        .path(request.getRequestURI())
-//                        .build()
-//                , HttpStatus.UNAUTHORIZED);
-//    }
-
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<StandardExceptionDetails> handlerBadCredentialsException(BadCredentialsException exception, HttpServletRequest request) {
-        return new ResponseEntity<>(
-                StandardExceptionDetails
-                        .builder()
-                        .status(HttpStatus.UNAUTHORIZED.value())
-                        .error("BadCredentials")
-                        .message("Invalid username or password")
-                        .timestamp(LocalDateTime.now())
-                        .path(request.getRequestURI())
-                        .build()
-                , HttpStatus.UNAUTHORIZED);
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ValidationExceptionsDetails> methodArgumentNotValidException(MethodArgumentNotValidException e, HttpServletRequest request) {
         List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
@@ -162,5 +138,44 @@ public class CustomExceptionHandler {
                 , HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<StandardExceptionDetails> handlerBadCredentialsException(BadCredentialsException exception, HttpServletRequest request, HttpServletResponse response) {
+        response.addHeader(HttpHeaders.SET_COOKIE, createInvalidCookie().toString());
+        return new ResponseEntity<>(
+                StandardExceptionDetails
+                        .builder()
+                        .status(HttpStatus.UNAUTHORIZED.value())
+                        .error("BadCredentials")
+                        .message("Invalid username or password")
+                        .timestamp(LocalDateTime.now())
+                        .path(request.getRequestURI())
+                        .build()
+                , HttpStatus.UNAUTHORIZED);
+    }
 
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<StandardExceptionDetails> authenticationException(AuthenticationException e, HttpServletRequest request, HttpServletResponse response) {
+        response.addHeader(HttpHeaders.SET_COOKIE, createInvalidCookie().toString());
+        return new ResponseEntity<>(
+                StandardExceptionDetails
+                        .builder()
+                        .status(HttpStatus.UNAUTHORIZED.value())
+                        .error("BadCredentials")
+                        .message("Invalid username or password")
+                        .timestamp(LocalDateTime.now())
+                        .path(request.getRequestURI())
+                        .build()
+                , HttpStatus.UNAUTHORIZED);
+    }
+
+    private ResponseCookie createInvalidCookie(){
+        return ResponseCookie.from("accessToken", null)
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(0)
+                .build();
+    }
 }
+

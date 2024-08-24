@@ -14,7 +14,7 @@ public record TransactionResponse(
         TransactionType type
 ) {
     public TransactionResponse(Transaction transaction){
-        this(transaction.getAccountSender().getDocument(),
+        this(transaction.getAccountSender() != null ? transaction.getAccountSender().getDocument() : null,
                 transaction.getAccountReceiver() != null ? transaction.getAccountReceiver().getDocument() : null,
                 transaction.getAmount(),
                 transaction.getTimestamp(),

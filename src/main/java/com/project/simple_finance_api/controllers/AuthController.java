@@ -46,7 +46,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest request, HttpServletResponse response){
-        try {
         Authentication usernamePassword = new UsernamePasswordAuthenticationToken(request.email(), request.password());
         Authentication auth = authenticationManager.authenticate(usernamePassword);
 
@@ -59,15 +58,5 @@ public class AuthController {
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
         return ResponseEntity.ok().body("Successfully authenticated!");
-        } catch (BadCredentialsException e){
-            ResponseCookie cookie = ResponseCookie.from("accessToken", null)
-                    .httpOnly(true)
-                    .secure(false)
-                    .path("/")
-                    .maxAge(0)
-                    .build();
-            response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-            throw new BadCredentialsException("Invalid credentials");
-        }
     }
 }

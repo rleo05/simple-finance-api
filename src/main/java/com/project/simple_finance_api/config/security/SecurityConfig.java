@@ -22,6 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final TokenFilter tokenFilter;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -33,6 +34,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"auth/login").permitAll()
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(customAuthenticationEntryPoint))
                 .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

@@ -16,6 +16,15 @@ public class AccountUtil {
                 .build();
     }
 
+    public static Account accountToBeSaved(){
+        return Account.builder()
+                .firstName("test")
+                .lastName("test")
+                .document("999999999")
+                .balance(0)
+                .build();
+    }
+
     public static Account createReceiverAccount(){
         return Account.builder()
                 .id("dd421509-47a4-4395-816b-5dbb1c6b8750")

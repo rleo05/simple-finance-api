@@ -17,10 +17,13 @@ import java.util.List;
 
 @Service
 public class TransactionService {
-    @Autowired
-    private TransactionRepository transactionRepository;
-    @Autowired
-    private AccountService accountService;
+    private final TransactionRepository transactionRepository;
+    private final AccountService accountService;
+
+    public TransactionService(TransactionRepository transactionRepository, AccountService accountService) {
+        this.transactionRepository = transactionRepository;
+        this.accountService = accountService;
+    }
 
     public DepositWithdrawalResponse deposit(String document, DepositWithdrawalRequest deposit){
         Account account = accountService.findByDocument(document);

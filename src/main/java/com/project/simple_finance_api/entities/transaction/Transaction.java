@@ -3,10 +3,7 @@ package com.project.simple_finance_api.entities.transaction;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.simple_finance_api.entities.account.Account;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 
@@ -16,6 +13,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @Data
 @Setter
+@Builder
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

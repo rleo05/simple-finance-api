@@ -19,8 +19,6 @@ public class AccountController {
     @Autowired
     private TokenService tokenService;
     @Autowired
-    private UserService userService;
-    @Autowired
     private AccountService accountService;
 
     @GetMapping(path = "/{document}")

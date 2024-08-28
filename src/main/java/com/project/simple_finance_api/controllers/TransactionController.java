@@ -51,7 +51,7 @@ public class TransactionController {
     }
 
     @PostMapping(path = "/{document}/transfer")
-    public ResponseEntity<TransferResponse> historicTransactions(@PathVariable String document, @RequestBody TransferRequest transferRequest, HttpServletRequest request){
+    public ResponseEntity<TransferResponse> transferMoney(@PathVariable String document, @RequestBody TransferRequest transferRequest, HttpServletRequest request){
         if (isCorrectToken(request, document)) {
             throw new AccessDeniedException("You cannot transfer money from this account");
         }

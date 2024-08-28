@@ -23,6 +23,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private final TokenFilter tokenFilter;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
+    private static final String[] SWAGGER_WHITELIST = {
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/swagger-resources/**",
+            "/swagger-resources"
+    };
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -32,6 +39,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST,"auth/register").permitAll()
                         .requestMatchers(HttpMethod.POST,"auth/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, SWAGGER_WHITELIST).permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(customAuthenticationEntryPoint))

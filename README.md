@@ -97,14 +97,25 @@ Before accessing transaction endpoints, you need to authenticate. Log in to obta
 ### Example Transaction Request
 
 - **Endpoint:**
-  - `POST /transactions`
+  - `POST /transaction/{document}/transfer`
   
-- **Body (Example):**
+- **Request Body (Example):**
   ```json
   {
+    "receiver_document": "111111111",
+    "amount": 500
+  }
+  ```
+
+- **Response Body (Example):**
+  ```json
+  {
+    "sender_name": "name1",
+    "sender_document": "999999999",
+    "receiver_name": "name2",
+    "receiver_document": "111111111",
     "amount": 500,
-    "type": "deposit",
-    "description": "Initial deposit"
+    "timestamp": "2024-09-29T02:57:06.606282900Z"
   }
   ```
 
